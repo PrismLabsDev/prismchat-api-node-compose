@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+
+  maintenance:
+    build:
+      context: ./
+      dockerfile: maintenance.dockerfile
+    restart: always
+    volumes:
+      - ./volumes/maintenance/certbot:/var/certbot/
+      - ./volumes/maintenance/letsencrypt/:/etc/letsencrypt/
+    depends_on:
+      - nginx
+
+  nginx:
+    image: nginx:1.23
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./volumes/maintenance/certbot:/var/certbot/
+      - ./volumes/maintenance/letsencrypt/:/etc/nginx/ssl/
+    depends_on:
+      - prismchat
+    restart: "always"
+
+  prismchat:
+    image: prismlabsdev/prismchat-api-node:latest
+    depends_on:
+      - mongo
+    restart: "always"
+    environment:
+      PORT: 8080
+      JWT_PUB: _
+      JWT_PRV: _
+      AUTH_PUB: _
+      AUTH_PRV: _
+      VAPID_PUB: _
+      VAPID_PRV: _
+      DB_HOST: mongo
+      DB_PORT: 27017
+      DB_DATABASE: prism
+      DB_USERNAME: prism
+      DB_PASSWORD: password
+
+  mongo:
+    image: mongo:6.0.6
+    ports:
+      - 27017:27017
+    volumes:
+      - ./volumes/mongo:/data/db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: prism
+      MONGO_INITDB_ROOT_PASSWORD: password
