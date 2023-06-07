@@ -2,7 +2,21 @@ version: '3.8'
 
 services:
 
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - prismchat
+    restart: "always"
+    environment:
+      WATCHTOWER_LABEL_ENABLE: true
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_POST_UPDATE_COMMAND: "docker exec nginx nginx -s reload"
+
   maintenance:
+    container_name: maintenance
     build:
       context: ./
       dockerfile: maintenance.dockerfile
@@ -14,6 +28,7 @@ services:
       - nginx
 
   nginx:
+    container_name: nginx
     image: nginx:1.23
     ports:
       - 80:80
@@ -31,6 +46,8 @@ services:
     depends_on:
       - mongo
     restart: "always"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     environment:
       PORT: 8080
       JWT_PUB: _
@@ -46,6 +63,7 @@ services:
       DB_PASSWORD: password
 
   mongo:
+    container_name: mongo
     image: mongo:6.0.6
     ports:
       - 27017:27017
