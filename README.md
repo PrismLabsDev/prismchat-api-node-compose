@@ -60,7 +60,13 @@ docker exec nginx nginx -s reload
 
 ## Updates
 
-We utilize [containrrr/watchtower](https://hub.docker.com/r/containrrr/watchtower) to automatically update the prismchat container to the latest image. Every other container is hard versioned to prevent any unexpected versioning errors. This environment will remain in sync with the latest stable version of PrismChat which can be found by tag or the latest commit to the main branch. Seeing as the watchtower container will automatically update the prismchat container to the latest version automatically this could lead to the other, hard versioned, containers becoming out of date. If you wish to manually update instead simply comment out the watchtower container and remove the label "com.centurylinklabs.watchtower.enable=true" from the prismchat container in the docker-compose file and follow the steps below.
+We utilize [containrrr/watchtower](https://hub.docker.com/r/containrrr/watchtower) to automatically update the prismchat container to the latest image. Every other container is hard versioned to prevent any unexpected versioning errors. This environment will remain in sync with the latest stable version of PrismChat which can be found by tag or the latest commit to the main branch. Seeing as the watchtower container will automatically update the prismchat container to the latest version automatically this could lead to the other, hard versioned, containers becoming out of date. Watchtower automatically checks for updates every 24 hours, and on start. So you can trigger an update simply by restarting the watchtower container.
+
+If you wish to manually update instead simply comment out the watchtower container and remove the label "com.centurylinklabs.watchtower.enable=true" from the prismchat container in the docker-compose file and follow the steps below.
+
+``` bash
+docker restart watchtower
+```
 
 ### Manual Updates
 
