@@ -50,6 +50,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
     environment:
       PORT: 8080
+      URL: api1.prism.chat
       JWT_PUB: _
       JWT_PRV: _
       AUTH_PUB: _
